@@ -1,0 +1,13 @@
+- name: "Password-less sudo for all users"
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Set local user's default shell and generate SSH key
+  user:
+      name: "{{ default_user }}"
+      shell: /usr/bin/zsh
+      generate_ssh_key: yes

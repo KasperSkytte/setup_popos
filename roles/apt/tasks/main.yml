@@ -1,0 +1,11 @@
+---
+- name: Install apt packages
+  become: yes
+  apt:
+    pkg: "{{ apt_pkgs }}"
+    state: present
+
+- name: Remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes

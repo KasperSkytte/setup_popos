@@ -1,5 +1,5 @@
 # Setup Pop!_OS after a clean install
-Setup a clean machine as I'm used to
+Setup a clean machine as I'm used to it
 
 ## To-do
 

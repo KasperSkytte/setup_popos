@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - apt
+    - general
+    - geerlingguy.pip
+    - geerlingguy.docker
+  vars:
+    default_user: kapper
+    pip_install_packages:
+      - name: docker
+    docker_install_compose: true
+    docker_users:
+      - "{{ default_user }}"
+    apt_pkgs:
+      - htop
+      - tmux
+      - zsh
