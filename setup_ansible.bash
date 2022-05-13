@@ -2,29 +2,35 @@
 set -eu
 ansible_venv=${ansible_venv:-"ansible-venv"}
 
+message() {
+    echo "*** $1"
+}
+
 install_pkgs() {
-    echo "Checking for required system packages..."
-    pkgs="software-properties-common pipenv"
+    message "Checking for required system packages..."
+    pkgs="software-properties-common python3-venv"
     if ! dpkg -s $pkgs >/dev/null 2>&1
     then
-        echo "One or more system packages are not installed, installing..."
+        message "One or more system packages are not installed, installing..."
         sudo apt-get update -qqy
         sudo apt-get install -y $pkgs
     else
-        echo "All required system packages are already installed..."
+        message "All required system packages are already installed..."
     fi
 }
 
 setup_ansible() {
+    message "Installing ansible into virtual environment: ${ansible_venv}..."
+    python3 -m venv "$ansible_venv"
+    . "${ansible_venv}/bin/activate"
+    python3 -m pip install ansible
     #ansible-galaxy collection install community.general --roles roles
-    echo "Installing ansible-galaxy roles into ./roles..."
-    pipenv run ansible-galaxy install -r roles/requirements.yml --roles roles
+    message "Installing ansible-galaxy roles..."
+    ansible-galaxy install -r roles/requirements.yml --roles roles/
 }
 
 install_pkgs
 setup_ansible
 
 echo
-echo "Done setting up. To run the playbook run the following in the root of this repository:"
-echo "  pipenv shell"
-echo  "  ansible-playbook playbook.yml --ask-become-pass"
+message "Done installing ansible and required ansible roles. To run the playbook first activate the virtual environment using '. ${ansible_venv}/bin/activate', and then run 'ansible-playbook playbook.yml --ask-become-pass --connection=local'"
