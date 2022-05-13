@@ -1,12 +1,21 @@
 ---
 - hosts: localhost
   connection: local
-  become: true
+  pre_tasks:
+    - name: Set ansible_distribution to Ubuntu if running Pop!_OS
+      set_fact: ansible_distribution="Ubuntu"
+      when: ansible_distribution == "Pop!_OS"
   roles:
-    - apt
     - general
     - geerlingguy.pip
     - geerlingguy.docker
+    - gantsign.visual-studio-code
+    - brave-browser
+    - tailscale
+    - gitkraken
+    - nextcloud_client
+    - teleport
+    - spotify
   vars:
     default_user: kapper
     pip_install_packages:
@@ -18,3 +27,6 @@
       - htop
       - tmux
       - zsh
+      - apt-transport-https
+      - curl
+      - slack-desktop

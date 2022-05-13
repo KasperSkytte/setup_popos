@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Nextcloud
+GenericName=nextcloud_client
+Comment=Nextcloud client app for synchronization
+Exec=nextcloud
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true

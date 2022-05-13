@@ -13,16 +13,17 @@ Setup a clean machine as I'm used to it
 ecome-pass"
 
 **playbook**
- - [ ] teleport
- - [ ] (tailscale)
- - [ ] brave
- - [ ] spotify
- - [ ] slack
+ - [x] teleport
+ - [x] (tailscale)
+ - [x] brave
+ - [x] spotify
+ - [x] slack
  - [ ] teams
- - [ ] gitkraken
- - [ ] nextcloud
- - [ ] docker
+ - [x] gitkraken
+ - [x] nextcloud
+ - [x] docker and docker-compose
+ - [x] pip
  - [ ] R+RStudio
- - [ ] VSCode
+ - [x] VSCode
  - [ ] openvpn
  - [ ] dotfiles
