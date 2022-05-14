@@ -1,0 +1,16 @@
+- name: "Add APT repository (loop)"
+  include_tasks: add_repo.yml
+  loop: "{{ apt_repos }}"
+  loop_control:
+    loop_var: repo
+
+- name: Install apt packages
+  become: true
+  apt:
+    pkg: "{{ apt_pkgs }}"
+    state: present
+
+- name: Remove dependencies that are no longer required
+  become: true
+  apt:
+    autoremove: yes

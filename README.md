@@ -23,7 +23,7 @@ ecome-pass"
  - [x] nextcloud
  - [x] docker and docker-compose
  - [x] pip
- - [ ] R+RStudio
+ - [x] R+RStudio
  - [x] VSCode
  - [ ] openvpn
  - [ ] dotfiles

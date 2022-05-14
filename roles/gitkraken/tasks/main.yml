@@ -1,5 +1,6 @@
 ---
 - name: Download and install GitKraken (deb file)
+  become: true
   apt:
     deb: https://release.gitkraken.com/linux/gitkraken-amd64.deb
     state: present

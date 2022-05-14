@@ -1,28 +1,52 @@
 ---
 - hosts: localhost
   connection: local
+  become: true
   pre_tasks:
     - name: Set ansible_distribution to Ubuntu if running Pop!_OS
       set_fact: ansible_distribution="Ubuntu"
       when: ansible_distribution == "Pop!_OS"
-  roles:
-    - general
-    - geerlingguy.pip
-    - geerlingguy.docker
-    - gantsign.visual-studio-code
-    - brave-browser
-    - tailscale
-    - gitkraken
-    - nextcloud_client
-    - teleport
-    - spotify
+    - name: debug
+      debug:
+        msg: "{{ ansible_distribution }} *** {{ ansible_user_id }} *** "
   vars:
-    default_user: kapper
-    pip_install_packages:
-      - name: docker
-    docker_install_compose: true
-    docker_users:
-      - "{{ default_user }}"
+    default_user: "{{ ansible_user_id }}"
+    apt_repos:
+      - {
+          name: "tailscale",
+          signing_key_url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.gpg",
+          repo_source_string: "https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+        }
+      - {
+          name: "teleport",
+          signing_key_url: "https://deb.releases.teleport.dev/teleport-pubkey.asc",
+          repo_source_string: "https://deb.releases.teleport.dev/ stable main"
+        }
+      - {
+          name: "spotify",
+          signing_key_url: "https://download.spotify.com/debian/pubkey_5E3C45D7B312C643.gpg",
+          repo_source_string: "http://repository.spotify.com stable non-free"
+        }
+      - {
+          name: "brave-browser",
+          signing_key_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg",
+          repo_source_string: "https://brave-browser-apt-release.s3.brave.com/ stable main"
+        }
+      - {
+          name: "vscode",
+          signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
+          repo_source_string: "https://packages.microsoft.com/repos/code stable main"
+        }
+      - {
+          name: "docker",
+          signing_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg",
+          repo_source_string: "https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+        }
+      - {
+          name: "r-cran",
+          signing_key_url: "https://mirrors.dotsrc.org/cran/bin/linux/{{ ansible_distribution | lower }}/marutter_pubkey.asc",
+          repo_source_string: "https://mirrors.dotsrc.org/cran/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
+        }
     apt_pkgs:
       - htop
       - tmux
@@ -30,3 +54,35 @@
       - apt-transport-https
       - curl
       - slack-desktop
+      - tailscale
+      - teleport
+      - spotify-client
+      - brave-browser
+      - code
+      - docker-ce
+      - r-base
+      - r-recommended
+      #extras for R
+      - libcurl4-openssl-dev
+      - libssl-dev
+      - libxml2-dev
+      - libxt-dev
+      - libcairo2-dev
+      - libharfbuzz-dev
+      - libfribidi-dev
+      - libtiff5-dev
+      - pandoc
+  roles:
+    - apt
+    - general
+    - gitkraken
+    - nextcloud_client
+    - nvidia.nvidia_driver
+    #- nvidia.nvidia_docker
+  # tasks:
+  #   - name: Ensure docker users are added to the docker group
+  #     user:
+  #       name: "{{ item }}"
+  #       groups: docker
+  #       append: true
+  #     with_items: "{{ docker_users }}"

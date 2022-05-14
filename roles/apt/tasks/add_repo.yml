@@ -1,0 +1,14 @@
+- name: "Retrieve {{ repo.name }} APT repository signing key"
+  become: true
+  apt_key:
+    url: "{{ repo.signing_key_url }}"
+    keyring: "/usr/share/keyrings/{{ repo.name }}-archive-keyring.gpg"
+    state: present
+
+- name: "Add {{ repo.name }} APT repository"
+  become: true
+  apt_repository:
+    repo: 'deb [arch=amd64 signed-by=/usr/share/keyrings/{{ repo.name }}-archive-keyring.gpg] {{ repo.repo_source_string }}'
+    filename: "{{ repo.name }}"
+    state: present
+    update_cache: true
