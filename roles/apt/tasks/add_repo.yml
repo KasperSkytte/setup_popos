@@ -12,3 +12,7 @@
     filename: "{{ repo.name }}"
     state: present
     update_cache: true
+
+- name: "Wait 2 seconds for packagekitd to finish off before continuing"
+  wait_for:
+    timeout: 2
