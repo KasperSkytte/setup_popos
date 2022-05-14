@@ -6,11 +6,8 @@
     - name: Set ansible_distribution to Ubuntu if running Pop!_OS
       set_fact: ansible_distribution="Ubuntu"
       when: ansible_distribution == "Pop!_OS"
-    - name: debug
-      debug:
-        msg: "{{ ansible_distribution }} *** {{ ansible_user_id }} *** "
   vars:
-    default_user: "{{ ansible_user_id }}"
+    default_user: kapper
     apt_repos:
       - {
           name: "tailscale",

@@ -8,10 +8,12 @@
   file:
     path: "{{ ansible_env.HOME }}/.config/autostart"
     state: directory
+    owner: "{{ default_user }}"
     mode: 0775
 
 - name: Auto start Nextcloud desktop client on login
   copy:
     src: nextcloud_client.desktop
+    owner: "{{ default_user }}"
     dest: "{{ ansible_env.HOME }}/.config/autostart/nextcloud_client.desktop"
     mode: 0755
