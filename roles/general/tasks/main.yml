@@ -14,3 +14,8 @@
       name: "{{ default_user }}"
       shell: /usr/bin/zsh
       generate_ssh_key: yes
+
+- name: Remove Firefox
+  apt:
+    name: firefox
+    state: absent

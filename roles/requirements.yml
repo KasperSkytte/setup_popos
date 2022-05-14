@@ -1,6 +1,4 @@
 ---
 roles:
-  - name: oefenweb.latest_r
   - name: nvidia.nvidia_driver
   - name: nvidia.nvidia_docker
-  - name: gantsign.visual-studio-code

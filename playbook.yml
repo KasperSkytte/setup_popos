@@ -73,8 +73,8 @@
       - libtiff5-dev
       - pandoc
   roles:
-    - apt
     - general
+    - apt
     - gitkraken
     - nextcloud_client
     - nvidia.nvidia_driver
