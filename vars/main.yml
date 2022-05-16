@@ -50,6 +50,8 @@ apt_pkgs_install:
   - curl
   - openvpn
   - etckeeper
+  - sshfs
+  - filezilla
   #from added repos
   - slack-desktop
   - tailscale

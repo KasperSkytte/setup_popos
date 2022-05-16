@@ -3,6 +3,7 @@ Setup a clean machine as I'm used to it. No personal settings or secrets here.
 
 Currently, this playbook will install:
  - [x] zsh (set as default shell instead of bash)
+ - [ ] dotfiles (personal)
  - [x] Teleport
  - [x] Tailscale
  - [x] Brave
@@ -13,11 +14,13 @@ Currently, this playbook will install:
  - [x] Nextcloud sync client (with desktop autostart)
  - [x] Docker
  - [x] R
- - [x] RStudio
+ - [ ] RStudio
  - [x] VSCode
    - [ ] Install nautilus "open folder in vscode" extension from https://github.com/KasperSkytte/code-nautilus
  - [x] openvpn (no configs)
- - [ ] dotfiles (personal)
+ - [x] etckeeper
+ - [x] sshfs
+ - [z] filezilla
 
 # Installation
  - **Inspect everything here first**. Don't just trust a random guy on the internet straight away.
