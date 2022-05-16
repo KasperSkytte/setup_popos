@@ -15,6 +15,7 @@ Currently, this playbook will install:
  - [x] R
  - [x] RStudio
  - [x] VSCode
+   - [ ] Install nautilus "open folder in vscode" extension from https://github.com/KasperSkytte/code-nautilus
  - [x] openvpn (no configs)
  - [ ] dotfiles (personal)
 
