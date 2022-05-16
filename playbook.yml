@@ -8,6 +8,7 @@
       when: ansible_distribution == "Pop!_OS"
   vars:
     default_user: kapper
+    default_user_shell_zsh: true
     apt_repos:
       - {
           name: "tailscale",

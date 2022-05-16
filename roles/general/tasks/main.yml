@@ -8,15 +8,17 @@
     line: '%sudo ALL=(ALL) NOPASSWD: ALL'
     validate: '/usr/sbin/visudo -cf %s'
 
-- name: "Set default user {{ default_user }}'s' default shell and generate SSH key"
-  become: true
-  user:
-      name: "{{ default_user }}"
-      shell: /usr/bin/zsh
-      generate_ssh_key: yes
-
-- name: Remove Firefox
-  become: true
+- name: Ensure zsh is installed
   apt:
-    name: firefox
-    state: absent
+    name: zsh
+    state: present
+  when: default_user_shell_zsh | bool
+
+- name: "Ensure default user has been added correctly"
+  user:
+    name: "{{ default_user }}"
+    home: "/home/{{ default_user }}"
+    move_home: yes
+    shell: "{{ '/usr/bin/zsh' if default_user_shell_zsh | bool else '/bin/bash' }}"
+    generate_ssh_key: yes
+    state: present
