@@ -1,0 +1,73 @@
+default_user_shell_zsh: true
+apt_repos:
+  - {
+      name: "tailscale",
+      signing_key_url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.gpg",
+      repo_source_string: "https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+    }
+  - {
+      name: "teleport",
+      signing_key_url: "https://deb.releases.teleport.dev/teleport-pubkey.asc",
+      repo_source_string: "https://deb.releases.teleport.dev/ stable main"
+    }
+  - {
+      name: "spotify",
+      signing_key_url: "https://download.spotify.com/debian/pubkey_5E3C45D7B312C643.gpg",
+      repo_source_string: "http://repository.spotify.com stable non-free"
+    }
+  - {
+      name: "brave-browser",
+      signing_key_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg",
+      repo_source_string: "https://brave-browser-apt-release.s3.brave.com/ stable main"
+    }
+  - {
+      name: "vscode",
+      signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
+      repo_source_string: "https://packages.microsoft.com/repos/code stable main"
+    }
+  - {
+      name: "docker",
+      signing_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg",
+      repo_source_string: "https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+    }
+  - {
+      name: "r-cran",
+      signing_key_url: "https://mirrors.dotsrc.org/cran/bin/linux/{{ ansible_distribution | lower }}/marutter_pubkey.asc",
+      repo_source_string: "https://mirrors.dotsrc.org/cran/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
+    }
+  - {
+      name: "ms-teams",
+      signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
+      repo_source_string: "https://packages.microsoft.com/repos/ms-teams stable main"
+    }
+apt_pkgs_purge:
+  - firefox
+apt_pkgs_install:
+  #from system repo
+  - htop
+  - tmux
+  - apt-transport-https
+  - curl
+  - openvpn
+  - etckeeper
+  #from added repos
+  - slack-desktop
+  - tailscale
+  - teleport
+  - spotify-client
+  - brave-browser
+  - code
+  - docker-ce
+  - r-base
+  - r-recommended
+  - teams
+#extras for R
+  - libcurl4-openssl-dev
+  - libssl-dev
+  - libxml2-dev
+  - libxt-dev
+  - libcairo2-dev
+  - libharfbuzz-dev
+  - libfribidi-dev
+  - libtiff5-dev
+  - pandoc

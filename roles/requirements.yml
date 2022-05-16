@@ -1,4 +1,4 @@
 ---
 roles:
   - name: nvidia.nvidia_driver
-  - name: nvidia.nvidia_docker
+  #- name: nvidia.nvidia_docker #not working atm due to distribution being overwritten to popos by the role itself
