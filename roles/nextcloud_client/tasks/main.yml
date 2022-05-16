@@ -4,16 +4,25 @@
     name: nextcloud-desktop
     state: latest
 
-- name: "Ensure {{ ansible_env.HOME }}/.config/autostart folder exists"
+- name: Detect default user's home directory
+  shell:
+    cmd: "eval echo ~{{ default_user }}"
+    executable: /bin/bash
+  changed_when: false
+  register: default_user_home
+
+- name: "Ensure {{ default_user_home.stdout }}/.config/autostart folder exists"
   file:
-    path: "{{ ansible_env.HOME }}/.config/autostart"
+    path: "{{ default_user_home.stdout }}/.config/autostart"
     state: directory
     owner: "{{ default_user }}"
+    group: "{{ default_user }}"
     mode: 0775
 
 - name: Auto start Nextcloud desktop client on login
   copy:
     src: nextcloud_client.desktop
     owner: "{{ default_user }}"
-    dest: "{{ ansible_env.HOME }}/.config/autostart/nextcloud_client.desktop"
+    group: "{{ default_user }}"
+    dest: "{{ default_user_home.stdout }}/.config/autostart/nextcloud_client.desktop"
     mode: 0755
