@@ -31,6 +31,3 @@ setup_ansible() {
 
 install_pkgs
 setup_ansible
-
-echo
-message "Done installing ansible and required ansible roles. To run the playbook first activate the virtual environment using '. ${ansible_venv}/bin/activate', and then run 'ansible-playbook playbook.yml --ask-become-pass --connection=local'"
