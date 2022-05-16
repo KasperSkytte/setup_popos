@@ -44,10 +44,12 @@
           signing_key_url: "https://mirrors.dotsrc.org/cran/bin/linux/{{ ansible_distribution | lower }}/marutter_pubkey.asc",
           repo_source_string: "https://mirrors.dotsrc.org/cran/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
         }
-    apt_pkgs:
+    apt_pkgs_purge:
+      - firefox
+    apt_pkgs_install:
+      #from system repo
       - htop
       - tmux
-      - zsh
       - apt-transport-https
       - curl
       - slack-desktop

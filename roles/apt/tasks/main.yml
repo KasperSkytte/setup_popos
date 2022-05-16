@@ -4,10 +4,17 @@
   loop_control:
     loop_var: repo
 
-- name: Install apt packages
+- name: Purge APT packages
   become: true
   apt:
-    pkg: "{{ apt_pkgs }}"
+    pkg: "{{ apt_pkgs_purge }}"
+    state: absent
+    purge: yes
+
+- name: Install APT packages
+  become: true
+  apt:
+    pkg: "{{ apt_pkgs_install }}"
     state: present
 
 - name: Remove dependencies that are no longer required
