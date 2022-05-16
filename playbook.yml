@@ -45,6 +45,11 @@
           signing_key_url: "https://mirrors.dotsrc.org/cran/bin/linux/{{ ansible_distribution | lower }}/marutter_pubkey.asc",
           repo_source_string: "https://mirrors.dotsrc.org/cran/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
         }
+      - {
+          name: "ms-teams",
+          signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
+          repo_source_string: "https://packages.microsoft.com/repos/ms-teams stable main"
+        }
     apt_pkgs_purge:
       - firefox
     apt_pkgs_install:
@@ -53,6 +58,9 @@
       - tmux
       - apt-transport-https
       - curl
+      - openvpn
+      - etckeeper
+      #from added repos
       - slack-desktop
       - tailscale
       - teleport
@@ -62,6 +70,7 @@
       - docker-ce
       - r-base
       - r-recommended
+      - teams
       #extras for R
       - libcurl4-openssl-dev
       - libssl-dev
