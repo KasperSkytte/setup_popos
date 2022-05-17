@@ -1,3 +1,9 @@
+- name: "Temporarily disable packagekit to avoid apt lock in the background"
+  service:
+    name: packagekit
+    state: stopped
+  changed_when: false
+
 - name: "Add APT repository (loop)"
   include_tasks: add_repo.yml
   loop: "{{ apt_repos }}"
@@ -17,3 +23,9 @@
     pkg: "{{ apt_pkgs_install }}"
     state: latest
     autoremove: yes
+
+- name: Re-enable packagekit
+  service:
+    name: packagekit
+    state: started
+  changed_when: false
