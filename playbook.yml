@@ -13,7 +13,7 @@
   roles:
     - general
     - apt
-    - gitkraken
+    - flatpaks
     - nextcloud_client
     - nvidia.nvidia_driver
     #- nvidia.nvidia_docker #not working atm

@@ -1,3 +1,4 @@
+---
 - name: Install Nextcloud desktop client
   become: true
   apt:

@@ -40,6 +40,10 @@ apt_repos:
       signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
       repo_source_string: "https://packages.microsoft.com/repos/ms-teams stable main"
     }
+flatpak_repos:
+  - {name: "flathub", method: "user", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
+flatpaks:
+  - {name: "gitkraken", method: "user", state: "present", remote: "flathub"}
 apt_pkgs_purge:
   - firefox
 apt_pkgs_install:
@@ -48,6 +52,7 @@ apt_pkgs_install:
   - tmux
   - apt-transport-https
   - curl
+  - python3-pip
   - openvpn
   - etckeeper
   - sshfs

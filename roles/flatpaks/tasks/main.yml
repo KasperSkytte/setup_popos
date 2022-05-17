@@ -1,0 +1,17 @@
+---
+- name: Add/remove flatpak repository remote
+  community.general.flatpak_remote:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    flatpakrepo_url: "{{ item.url }}"
+    method: "{{ item.method }}"
+  with_items: "{{ flatpak_repos }}"
+
+
+- name: Install/remove flatpak
+  community.general.flatpak:
+    name: "{{ item.name }}"
+    method: "{{ item.method }}"
+    remote: "{{ item.remote }}"
+    state: "{{ item.state }}"
+  with_items: "{{ flatpaks }}"
