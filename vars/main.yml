@@ -57,6 +57,7 @@ apt_pkgs_install:
   - etckeeper
   - sshfs
   - filezilla
+  - system76-cuda-latest
   #from added repos
   - slack-desktop
   - tailscale
