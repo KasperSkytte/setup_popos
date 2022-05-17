@@ -58,6 +58,8 @@ apt_pkgs_install:
   - sshfs
   - filezilla
   - system76-cuda-latest
+  - net-tools
+  - nmap
   #from added repos
   - slack-desktop
   - tailscale

@@ -2,6 +2,8 @@
 Setup a clean machine as I'm used to it. No personal settings or secrets here.
 
 Currently, this playbook will install:
+ - [x] nvidia drivers with matching version of CUDA
+ - [ ] nvidia docker support (`nvidia.nvidia_docker` role needs adjustment to work with Pop!_OS atm)
  - [x] zsh (set as default shell instead of bash)
  - [ ] dotfiles (personal)
  - [x] Teleport
@@ -16,11 +18,13 @@ Currently, this playbook will install:
  - [x] R
  - [ ] RStudio
  - [x] VSCode
-   - [ ] Install nautilus "open folder in vscode" extension from https://github.com/KasperSkytte/code-nautilus
+   - [x] Install nautilus "open folder in vscode" extension
  - [x] openvpn (no configs)
  - [x] etckeeper
  - [x] sshfs
  - [z] filezilla
+
+Plus some other utilities like `nmap`, `net-tools` etc.
 
 # Installation
  - **Inspect everything here first**. Don't just trust a random guy on the internet straight away.
