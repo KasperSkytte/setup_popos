@@ -16,4 +16,9 @@
     - flatpaks
     - nextcloud_client
     - nvidia.nvidia_driver
-    #- nvidia.nvidia_docker #not working atm
+    # not working atm due to distribution being overwritten to popos by the role itself
+    #- nvidia.nvidia_docker
+  tasks:
+    - name: Install nautilus extension to enable 'open folder in code'
+      shell: "wget -qO- https://raw.githubusercontent.com/kasperskytte/code-nautilus/master/install.sh | bash"
+      become_user: "{{ default_user }}"
