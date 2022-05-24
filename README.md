@@ -29,7 +29,6 @@ Plus some other utilities like `nmap`, `net-tools` etc.
 # Installation
  - **Inspect everything here first**. Don't just trust a random guy on the internet straight away.
  - Clone this repository on the machine where [**Pop!_OS**](https://pop.system76.com/) has just been installed
- - Run the [first_run.bash](first_run.bash) script to update the system in general through APT
+ - Run the [update_system.bash](update_system.bash) script to update the system in general through APT
  - Make adjustments to the playbook and roles if you want
- - Run the [setup_ansible.bash](setup_ansible.bash) script to install ansible into a virtual environment in the current folder as well as required ansible galaxy roles
- - Run [run_playbook.bash](run_playbook.bash) to run activate the virtual environment and run the [playbook.yml](playbook.yml).
+ - Run `bash run_playbook.bash playbook.yml` to run install Ansible into a virtual environment and from there run the [playbook.yml](playbook.yml).
