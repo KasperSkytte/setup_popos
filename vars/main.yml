@@ -65,6 +65,7 @@ apt_pkgs_install:
   - system76-cuda-latest
   - net-tools
   - nmap
+  - ssh-askpass
   #from added repos
   - tailscale
   - teleport
