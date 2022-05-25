@@ -20,6 +20,7 @@ Currently, this playbook will install:
  - [x] VSCode
    - [x] Install nautilus "open folder in vscode" extension
  - [x] openvpn (no configs)
+ - [ ] PIA vpn
  - [x] etckeeper
  - [x] sshfs
  - [z] filezilla
