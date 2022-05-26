@@ -1,0 +1,19 @@
+- name: Ensure snapd is installed
+  apt:
+    name: snapd
+    state: present
+
+- name: Install snap packages
+  snap:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    classic: yes
+  with_items: 
+    - "{{ snap_pkgs }}"
+
+- name: "Create desktop symlinks to all snap applications for default user {{ default_user }}"
+  become_user: "{{ default_user }}"
+  file:
+    src: /var/lib/snapd/desktop/applications
+    dest: ~/.local/share/applications/snap
+    state: link

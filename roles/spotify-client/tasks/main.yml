@@ -1,0 +1,17 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "spotify",
+        signing_key_url: "https://download.spotify.com/debian/pubkey_5E3C45D7B312C643.gpg",
+        repo_source_string: "http://repository.spotify.com stable non-free"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install spotify-client
+  apt:
+    name: spotify-client
+    state: present
+    autoremove: true

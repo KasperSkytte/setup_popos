@@ -1,0 +1,17 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "docker",
+        signing_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg",
+        repo_source_string: "https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install docker-ce
+  apt:
+    name: docker-ce
+    state: present
+    autoremove: true

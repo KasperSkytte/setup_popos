@@ -1,0 +1,23 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "vscode",
+        signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
+        repo_source_string: "https://packages.microsoft.com/repos/code stable main"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install code
+  apt:
+    name: code
+    state: present
+    autoremove: true
+
+- name: Install nautilus extension to enable 'open folder in code'
+  become_user: "{{ default_user }}"
+  shell: "wget -qO- https://raw.githubusercontent.com/kasperskytte/code-nautilus/master/install.sh | bash"
+  args:
+    creates: "~/.local/share/nautilus-python/extensions/code-nautilus.py"

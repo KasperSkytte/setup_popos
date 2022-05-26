@@ -1,0 +1,17 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "teleport",
+        signing_key_url: "https://deb.releases.teleport.dev/teleport-pubkey.asc",
+        repo_source_string: "https://deb.releases.teleport.dev/ stable main"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install teleport
+  apt:
+    name: teleport
+    state: present
+    autoremove: true

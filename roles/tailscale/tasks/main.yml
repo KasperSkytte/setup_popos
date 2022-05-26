@@ -1,0 +1,17 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "tailscale",
+        signing_key_url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.gpg",
+        repo_source_string: "https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install tailscale
+  apt:
+    name: tailscale
+    state: present
+    autoremove: true

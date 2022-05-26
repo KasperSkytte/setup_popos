@@ -1,4 +1,3 @@
----
 - name: Add/remove flatpak repository remote
   community.general.flatpak_remote:
     name: "{{ item.name }}"
@@ -14,4 +13,4 @@
     method: "{{ item.method }}"
     remote: "{{ item.remote }}"
     state: "{{ item.state }}"
-  with_items: "{{ flatpaks }}"
+  with_items: "{{ flatpak_pkgs }}"

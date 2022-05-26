@@ -1,0 +1,17 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "brave-browser",
+        signing_key_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg",
+        repo_source_string: "https://brave-browser-apt-release.s3.brave.com/ stable main"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install brave-browser
+  apt:
+    name: brave-browser
+    state: present
+    autoremove: true

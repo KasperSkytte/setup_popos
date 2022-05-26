@@ -1,91 +1,24 @@
 default_user_shell_zsh: true
-apt_repos:
-  - {
-      name: "tailscale",
-      signing_key_url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.gpg",
-      repo_source_string: "https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
-    }
-  - {
-      name: "teleport",
-      signing_key_url: "https://deb.releases.teleport.dev/teleport-pubkey.asc",
-      repo_source_string: "https://deb.releases.teleport.dev/ stable main"
-    }
-  - {
-      name: "1password",
-      signing_key_url: "https://downloads.1password.com/linux/keys/1password.asc",
-      repo_source_string: "https://downloads.1password.com/linux/debian/amd64 stable main"
-    }
-  - {
-      name: "spotify",
-      signing_key_url: "https://download.spotify.com/debian/pubkey_5E3C45D7B312C643.gpg",
-      repo_source_string: "http://repository.spotify.com stable non-free"
-    }
-  - {
-      name: "brave-browser",
-      signing_key_url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg",
-      repo_source_string: "https://brave-browser-apt-release.s3.brave.com/ stable main"
-    }
-  - {
-      name: "vscode",
-      signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
-      repo_source_string: "https://packages.microsoft.com/repos/code stable main"
-    }
-  - {
-      name: "docker",
-      signing_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg",
-      repo_source_string: "https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
-    }
-  - {
-      name: "r-cran",
-      signing_key_url: "https://mirrors.dotsrc.org/cran/bin/linux/{{ ansible_distribution | lower }}/marutter_pubkey.asc",
-      repo_source_string: "https://mirrors.dotsrc.org/cran/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
-    }
-  - {
-      name: "ms-teams",
-      signing_key_url: "https://packages.microsoft.com/keys/microsoft.asc",
-      repo_source_string: "https://packages.microsoft.com/repos/ms-teams stable main"
-    }
+apt_pkgs:
+  - {name: firefox, state: absent}
+  - {name: htop, state: present}
+  - {name: tmux, state: present}
+  - {name: apt-transport-https, state: present}
+  - {name: curl, state: present}
+  - {name: python3-pip, state: present}
+  - {name: openvpn, state: present}
+  - {name: etckeeper, state: present}
+  - {name: sshfs, state: present}
+  - {name: filezilla, state: present}
+  - {name: system76-cuda-latest, state: present}
+  - {name: net-tools, state: present}
+  - {name: nmap, state: present}
+  - {name: ssh-askpass, state: present}
+  - {name: slack-desktop, state: present}
 flatpak_repos:
-  - {name: "flathub", method: "user", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
-flatpaks:
-  - {name: "gitkraken", method: "user", state: "present", remote: "flathub"}
-apt_pkgs_purge:
-  - firefox
-apt_pkgs_install:
-  #from system repo
-  - htop
-  - tmux
-  - apt-transport-https
-  - curl
-  - python3-pip
-  - openvpn
-  - etckeeper
-  - sshfs
-  - filezilla
-  - system76-cuda-latest
-  - net-tools
-  - nmap
-  - ssh-askpass
-  #from added repos
-  - tailscale
-  - teleport
-  - 1password
-  - 1password-cli
-  - spotify-client
-  - brave-browser
-  - code
-  - docker-ce
-  - r-base
-  - r-recommended
-  - teams
-  - slack-desktop
-#extras for R
-  - libcurl4-openssl-dev
-  - libssl-dev
-  - libxml2-dev
-  - libxt-dev
-  - libcairo2-dev
-  - libharfbuzz-dev
-  - libfribidi-dev
-  - libtiff5-dev
-  - pandoc
+  - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
+flatpak_pkgs:
+  - {name: "gitkraken", method: "system", state: "present", remote: "flathub"}
+  - {name: "bitwarden", method: "system", state: "present", remote: "flathub"}
+snap_pkgs:
+  - {name: "bw", state: "present"}

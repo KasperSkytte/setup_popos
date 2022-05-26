@@ -1,0 +1,28 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "r-cran",
+        signing_key_url: "https://mirrors.dotsrc.org/cran/bin/linux/{{ ansible_distribution | lower }}/marutter_pubkey.asc",
+        repo_source_string: "https://mirrors.dotsrc.org/cran/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install R and some extra nice-to-have packages
+  apt:
+    name: 
+      - r-base
+      - r-recommended
+      - libcurl4-openssl-dev
+      - libssl-dev
+      - libxml2-dev
+      - libxt-dev
+      - libcairo2-dev
+      - libharfbuzz-dev
+      - libfribidi-dev
+      - libtiff5-dev
+      - pandoc
+    state: present
+    autoremove: true
