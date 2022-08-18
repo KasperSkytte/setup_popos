@@ -16,6 +16,7 @@ apt_pkgs:
   - {name: system76-cuda-latest, state: present}
   - {name: net-tools, state: present}
   - {name: nmap, state: present}
+  - {name: locate, state: present}
   - {name: ssh-askpass, state: present}
   - {name: slack-desktop, state: present}
 flatpak_repos:
