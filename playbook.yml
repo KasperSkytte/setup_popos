@@ -6,6 +6,10 @@
     - name: Set ansible_distribution to Ubuntu if running Pop!_OS
       set_fact: ansible_distribution="Ubuntu"
       when: ansible_distribution == "Pop!_OS"
+    - name: Stop packagekitd temporarily
+      service:
+        name: packagekit
+        state: stopped
   vars:
     default_user: kapper
   vars_files:
@@ -35,3 +39,7 @@
         autoremove: yes
       with_items: 
         - "{{ apt_pkgs }}"
+    - name: Start packagekitd again
+      service:
+        name: packagekit
+        state: started
