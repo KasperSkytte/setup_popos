@@ -9,7 +9,7 @@ apt_pkgs:
   - {name: apt-transport-https, state: present}
   - {name: curl, state: present}
   - {name: python3-pip, state: present}
-  - {name: openvpn, state: present}
+  - {name: wireguard-tools, state: present}
   - {name: etckeeper, state: present}
   - {name: sshfs, state: present}
   - {name: filezilla, state: present}
@@ -22,7 +22,8 @@ apt_pkgs:
 flatpak_repos:
   - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
 flatpak_pkgs:
-  - {name: "gitkraken", method: "system", state: "present", remote: "flathub"}
-  - {name: "bitwarden", method: "system", state: "present", remote: "flathub"}
+  - {name: "com.axosoft.GitKraken", method: "system", state: "present", remote: "flathub"}
+  - {name: "com.bitwarden.desktop", method: "system", state: "present", remote: "flathub"}
+  - {name: "md.obsidian.Obsidian", method: "system", state: "present", remote: "flathub"}
 snap_pkgs:
   - {name: "bw", state: "present"}
