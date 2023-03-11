@@ -16,6 +16,7 @@ apt_pkgs:
   - {name: system76-cuda-latest, state: present}
   - {name: net-tools, state: present}
   - {name: nmap, state: present}
+  - {name: traceroute, state: present}
   - {name: locate, state: present}
   - {name: ssh-askpass, state: present}
   - {name: slack-desktop, state: present}
@@ -23,7 +24,4 @@ flatpak_repos:
   - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
 flatpak_pkgs:
   - {name: "com.axosoft.GitKraken", method: "system", state: "present", remote: "flathub"}
-  - {name: "com.bitwarden.desktop", method: "system", state: "present", remote: "flathub"}
   - {name: "md.obsidian.Obsidian", method: "system", state: "present", remote: "flathub"}
-snap_pkgs:
-  - {name: "bw", state: "present"}
