@@ -6,19 +6,27 @@ apt_pkgs:
   - {name: tmux, state: present}
   - {name: jq, state: present}
   - {name: xclip, state: present}
+  - {name: pcscd, state: present} #for yubikey
+  - {name: libu2f-udev, state: present} #for yubikey
+  - {name: libfido2-1, state: present} #for yubikey
+  - {name: libfido2-dev, state: present} #for yubikey
+  - {name: libfido2-doc, state: present} #for yubikey
+  - {name: fido2-tools, state: present} #for yubikey
+  - {name: libpam-u2f, state: present} #for yubikey
+  - {name: pamu2fcfg, state: present} #for yubikey
   - {name: apt-transport-https, state: present}
   - {name: curl, state: present}
   - {name: python3-pip, state: present}
   - {name: wireguard-tools, state: present}
   - {name: etckeeper, state: present}
   - {name: sshfs, state: present}
-  - {name: filezilla, state: present}
+  #- {name: filezilla, state: present}
   - {name: system76-cuda-latest, state: present}
   - {name: net-tools, state: present}
   - {name: nmap, state: present}
   - {name: traceroute, state: present}
   - {name: locate, state: present}
-  - {name: ssh-askpass, state: present}
+  - {name: ssh-askpass, state: present} #for ansible
   - {name: slack-desktop, state: present}
 flatpak_repos:
   - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}

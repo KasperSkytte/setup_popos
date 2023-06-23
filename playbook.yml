@@ -29,7 +29,7 @@
     - teleport
     - nextcloud_client
     - r
-    - nvidia.nvidia_driver
+    # - nvidia.nvidia_driver
     # not working atm due to distribution being overwritten to popos by the role itself
     #- nvidia.nvidia_docker
   tasks:
@@ -40,6 +40,7 @@
         autoremove: yes
       with_items: 
         - "{{ apt_pkgs }}"
+  post_tasks:
     - name: Start packagekitd again
       service:
         name: packagekit

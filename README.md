@@ -23,7 +23,7 @@ Currently, this playbook will install:
  - [ ] PIA vpn
  - [x] etckeeper
  - [x] sshfs
- - [z] filezilla
+ - [x] FileZilla
 
 Plus some other utilities like `nmap`, `net-tools` etc.
 
@@ -33,3 +33,7 @@ Plus some other utilities like `nmap`, `net-tools` etc.
  - Run the [update_system.bash](update_system.bash) script to update the system in general through APT
  - Make adjustments to the playbook and roles if you want
  - Run `bash run_playbook.bash playbook.yml` to run install Ansible into a virtual environment and from there run the [playbook.yml](playbook.yml).
+
+# To-do
+Adjust default APT repo from a set variable
+
