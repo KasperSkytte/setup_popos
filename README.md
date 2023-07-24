@@ -35,5 +35,6 @@ Plus some other utilities like `nmap`, `net-tools` etc.
  - Run `bash run_playbook.bash playbook.yml` to run install Ansible into a virtual environment and from there run the [playbook.yml](playbook.yml).
 
 # To-do
-Adjust default APT repo from a set variable
-
+ - Adjust default APT repo from a set variable
+ - Replace run command in `/user/share/applications/gitkraken.desktop` for GitKraken to support github key from 1password:
+    `Exec=env SSH_AUTH_SOCK=~/.1password/agent.sock /usr/share/gitkraken/gitkraken %U`
