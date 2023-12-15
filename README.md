@@ -19,8 +19,6 @@ Currently, this playbook will install:
  - [ ] RStudio
  - [x] VSCode
    - [x] Install nautilus "open folder in vscode" extension
- - [x] openvpn (no configs)
- - [ ] PIA vpn
  - [x] etckeeper
  - [x] sshfs
  - [x] FileZilla
