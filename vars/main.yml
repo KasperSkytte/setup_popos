@@ -27,6 +27,7 @@ apt_pkgs:
   - {name: locate, state: present}
   - {name: ssh-askpass, state: present} #for ansible
   - {name: slack-desktop, state: present}
+  - {name: terminator, state: present}
 flatpak_repos:
   - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
 flatpak_pkgs:
