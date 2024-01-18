@@ -24,7 +24,7 @@
     - vscode
     - 1password
     - brave-browser
-    #- spotify-client
+    - spotify-client
     - tailscale
     - teleport
     - nextcloud_client
