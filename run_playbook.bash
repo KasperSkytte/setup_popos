@@ -11,7 +11,7 @@
 # Available at: https://gist.github.com/KasperSkytte/d184d3d163d1e1cfa9b482b2c009a6c0
 
 set -eu
-ansible_venv=${ansible_venv:-"ansible-venv"}
+ansible_venv=${ansible_venv:-"virtualenv"}
 requirements_file=${requirements_file:-"roles/requirements.yml"}
 
 message() {

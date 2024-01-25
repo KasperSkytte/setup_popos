@@ -1,2 +1,2 @@
-ansible-venv
+virtualenv/
 roles/nvidia.nvidia*
