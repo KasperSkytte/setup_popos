@@ -20,7 +20,6 @@ apt_pkgs:
   - {name: wireguard-tools, state: present}
   - {name: etckeeper, state: present}
   - {name: sshfs, state: present}
-  - {name: system76-cuda-latest, state: present}
   - {name: net-tools, state: present}
   - {name: nmap, state: present}
   - {name: traceroute, state: present}
