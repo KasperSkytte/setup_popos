@@ -35,10 +35,11 @@
   tasks:
     - name: Install APT packages
       apt:
-        name: "{{ item.name }}"
+        name: "{{ item.name | default(omit) }}"
+        deb: "{{ item.deb | default(omit) }}"
         state: "{{ item.state }}"
         autoremove: yes
-      with_items: 
+      with_items:
         - "{{ apt_pkgs }}"
   post_tasks:
     - name: Start packagekitd again

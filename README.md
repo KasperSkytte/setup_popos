@@ -2,7 +2,7 @@
 Setup a clean machine as I'm used to it. No personal settings or secrets here.
 
 Currently, this playbook will install:
- - [x] nvidia drivers with matching version of CUDA
+ - [ ] nvidia drivers with matching version of CUDA
  - [ ] nvidia docker support (`nvidia.nvidia_docker` role needs adjustment to work with Pop!_OS atm)
  - [x] zsh (set as default shell instead of bash)
  - [ ] dotfiles (personal)
@@ -10,8 +10,8 @@ Currently, this playbook will install:
  - [x] Tailscale
  - [x] Brave
  - [x] Spotify
- - [x] Slack
- - [x] Teams
+ - [ ] Slack
+ - [ ] Teams
  - [x] GitKraken
  - [x] Nextcloud sync client (with desktop autostart)
  - [x] Docker
@@ -21,7 +21,6 @@ Currently, this playbook will install:
    - [x] Install nautilus "open folder in vscode" extension
  - [x] etckeeper
  - [x] sshfs
- - [x] FileZilla
 
 Plus some other utilities like `nmap`, `net-tools` etc.
 
@@ -37,3 +36,4 @@ Plus some other utilities like `nmap`, `net-tools` etc.
  - Replace run command in `/user/share/applications/gitkraken.desktop` for GitKraken to support github key from 1password:
     `Exec=env SSH_AUTH_SOCK=~/.1password/agent.sock /usr/share/gitkraken/gitkraken %U`
  - Install yubikey authenticator
+ - Install jumpcloud agent

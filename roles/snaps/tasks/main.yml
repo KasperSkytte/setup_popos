@@ -8,8 +8,10 @@
     name: "{{ item.name }}"
     state: "{{ item.state }}"
     classic: yes
-  with_items: 
+  with_items:
     - "{{ snap_pkgs }}"
+
+# create dir ~/.local/share/applications
 
 - name: "Create desktop symlinks to all snap applications for default user {{ default_user }}"
   become_user: "{{ default_user }}"

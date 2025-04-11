@@ -27,6 +27,7 @@ apt_pkgs:
   - {name: ssh-askpass, state: present} #for ansible
   - {name: slack-desktop, state: present}
   - {name: terminator, state: present}
+  - {deb: "https://tvd-packages.tradingview.com/ubuntu/stable/latest/jammy/tradingview_amd64.deb", state: present}
 flatpak_repos:
   - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
 flatpak_pkgs:
