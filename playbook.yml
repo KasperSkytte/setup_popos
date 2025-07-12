@@ -16,10 +16,9 @@
     - vars/main.yml
   roles:
     - general
-    - geerlingguy.swap
+    #- geerlingguy.swap
     - flatpaks
     - snaps
-    #- ms-teams
     - docker
     - vscode
     - 1password
@@ -29,9 +28,6 @@
     - teleport
     - nextcloud_client
     - r
-    # - nvidia.nvidia_driver
-    # not working atm due to distribution being overwritten to popos by the role itself
-    #- nvidia.nvidia_docker
   tasks:
     - name: Install APT packages
       apt:
