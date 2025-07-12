@@ -6,15 +6,10 @@
     - name: Set ansible_distribution to Ubuntu if running Pop!_OS
       set_fact: ansible_distribution="Ubuntu"
       when: ansible_distribution == "Pop!_OS"
-    - name: Stop packagekitd and unattended-upgrades services temporarily
+    - name: Stop packagekitd temporarily
       service:
-        name: "{{ item }}"
+        name: packagekit
         state: stopped
-        enabled: false
-      changed_when: false
-      with_items:
-        - packagekit
-        - unattended-upgrades
   vars:
     default_user: kapper
   vars_files:
@@ -43,12 +38,7 @@
       with_items:
         - "{{ apt_pkgs }}"
   post_tasks:
-    - name: Stop packagekitd and unattended-upgrades services temporarily
+    - name: Start packagekitd again
       service:
-        name: "{{ item }}"
+        name: packagekit
         state: started
-        enabled: true
-      changed_when: false
-      with_items:
-        - packagekit
-        - unattended-upgrades
