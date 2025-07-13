@@ -10,8 +10,14 @@
       service:
         name: packagekit
         state: stopped
+    - name: Update and upgrade system
+      apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
   vars:
-    default_user: kapper
+    default_user: "{{ lookup('env', 'USER') }}"
   vars_files:
     - vars/main.yml
   roles:
