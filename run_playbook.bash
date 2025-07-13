@@ -55,7 +55,7 @@ run_playbook() {
     then
         message "Ensuring required Ansible roles are installed (from ${requirements_file})"
         #ansible-galaxy collection install community.general --roles roles
-        ansible-galaxy install -r roles/requirements.yml --roles roles/
+        ansible-galaxy install -r roles/requirements.yml --roles roles/galaxy/
     fi
     message "Running Ansible playbook from virtual environment"
     ansible-playbook "$@"

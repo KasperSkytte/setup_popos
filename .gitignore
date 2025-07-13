@@ -1,2 +1,2 @@
 virtualenv/
-roles/nvidia.nvidia*
+roles/galaxy/
