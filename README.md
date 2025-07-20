@@ -18,7 +18,7 @@ Setup a clean machine as I'm used to it. No personal settings or secrets here.
  - Setup yubikey for sudo (and remove password-less sudo in general role) (https://dev.to/bashbunni/set-up-yubikey-for-passwordless-sudo-authentication-4h5o)
    ```
    mkdir ~/.config/Yubico
-   pamu2fcfg > ~/.config/Yubico/u2f_keys
+   pamu2fcfg > ~/.config/Yubico/u2f_keys #interactive, must type code and touch yubikey
    # in /etc/pam.d/sudo add "auth sufficient pam_u2f.so" before "common-auth" line
    ```
  - setup hostname
