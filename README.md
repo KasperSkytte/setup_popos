@@ -19,6 +19,10 @@ Setup a clean machine as I'm used to it. No personal settings or secrets here.
    ```
    mkdir ~/.config/Yubico
    pamu2fcfg > ~/.config/Yubico/u2f_keys #interactive, must type code and touch yubikey
-   # in /etc/pam.d/sudo add "auth sufficient pam_u2f.so" before "common-auth" line
+   # in /etc/pam.d/sudo AND /etc/pam.d/sudo-i add "auth sufficient pam_u2f.so cue" before "common-auth" line
    ```
+ - Setup yubikey for polkit-1 pop-ups instead of typing password
+  ```
+  # in /etc/pam.d/polkit-1 add "auth sufficient pam_u2f.so cue" before "common-auth" line
+  ```
  - setup hostname
