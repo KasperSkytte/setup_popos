@@ -12,6 +12,5 @@ Setup a clean machine as I'm used to it. No personal settings or secrets here.
  - Replace run command in `/user/share/applications/gitkraken.desktop` for GitKraken to support github key from 1password:
     `Exec=env SSH_AUTH_SOCK=~/.1password/agent.sock /usr/share/gitkraken/gitkraken %U`
  - Install jumpcloud agent
- - Disable mouse acceleration
  - Setup personal dotfiles
  - setup hostname
