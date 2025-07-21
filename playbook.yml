@@ -10,6 +10,7 @@
       service:
         name: packagekit
         state: stopped
+      changed_when: false
     - name: Update and upgrade system
       apt:
         update_cache: yes
@@ -61,3 +62,4 @@
       service:
         name: packagekit
         state: started
+      changed_when: false
