@@ -16,24 +16,37 @@
         upgrade: dist
         autoremove: yes
         autoclean: yes
-  vars:
-    default_user: "{{ lookup('env', 'USER') }}"
   vars_files:
     - vars/main.yml
   roles:
-    - general
-    #- geerlingguy.swap
-    - flatpaks
-    - snaps
-    - docker
-    - vscode
-    - 1password
-    - brave-browser
-    - spotify-client
-    - tailscale
-    - teleport
-    - nextcloud_client
-    - r
+    - role: general
+      tags: general
+    - role: yubikey
+      tags: yubikey
+    # - role: geerlingguy.swap
+    #   tags: swap
+    - role: flatpaks
+      tags: flatpaks
+    - role: snaps
+      tags: snaps
+    - role: docker
+      tags: docker
+    - role: vscode
+      tags: vscode
+    - role: 1password
+      tags: 1password
+    - role: brave-browser
+      tags: brave-browser
+    - role: spotify-client
+      tags: spotify-client
+    - role: tailscale
+      tags: tailscale
+    - role: teleport
+      tags: teleport
+    - role: nextcloud_client
+      tags: nextcloud_client
+    - role: r
+      tags: r
   tasks:
     - name: Install APT packages
       apt:

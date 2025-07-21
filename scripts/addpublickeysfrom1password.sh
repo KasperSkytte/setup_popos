@@ -13,3 +13,6 @@ op item list --categories sshkey --format json | jq -r '.[] | "\(.id)\t\(.title)
         echo "Skipped: $title (no public_key)"
     fi
 done
+echo "Setting 600 permissions..."
+chmod 600 "$DEST_DIR"/*
+echo "Public keys exported to $DEST_DIR"

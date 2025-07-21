@@ -1,8 +1,0 @@
-# download
-https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz
-
-# unpack
-tar zxf
-
-# run script
-bash desktop_integration.sh -i

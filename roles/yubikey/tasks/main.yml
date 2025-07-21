@@ -1,0 +1,70 @@
+---
+- name: "Install required packages for yubikey"
+  apt:
+    name: "{{ yubikey_apt_deps }}"
+    state: present
+    update_cache: true
+
+- name: "Install Yubico Authenticator"
+  block:
+    - name: Ensure local lib directory exists
+      file:
+        path: "/home/{{ default_user }}/.local/lib"
+        state: directory
+        mode: '0775'
+
+    - name: Download and extract latest Yubico authenticator tarball into ~/.local/lib
+      unarchive:
+        src: "{{ yubikey_authenticator_url }}"
+        dest: "/home/{{ default_user }}/.local/lib/"
+        remote_src: yes
+
+    - name: Find desktop_integration.sh script (subfolder in the tarball is versioned and will change)
+      shell: |
+        find "/home/{{ default_user }}/.local/lib" -type f -path "*/yubico-authenticator*/desktop_integration.sh" -exec realpath {} \; -quit
+      register: desktop_integration_script
+      changed_when: false
+
+    - name: "Run desktop integration script as user {{ default_user }}"
+      shell: "{{ desktop_integration_script.stdout }} -i"
+      args:
+        executable: /bin/bash
+        creates: "/home/{{ default_user }}/.local/share/applications/com.yubico.yubioath.desktop"
+      when: desktop_integration_script.stdout != ""
+      become: true
+      become_user: "{{ default_user }}"
+      environment:
+        HOME: "/home/{{ default_user }}"
+  when: yubikey_install_authenticator
+
+- name: "Disable password-less sudo for all users"
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+  when: yubikey_singlefactor
+
+- name: "Create ~/.config/Yubico directory"
+  file:
+    path: "/home/{{ default_user }}/.config/Yubico"
+    state: directory
+    recurse: true
+  when: yubikey_singlefactor
+
+- name: "Set up yubikey for sudo and polkit-1 pop-ups"
+  lineinfile:
+    path: "{{ item }}"
+    state: present
+    line: "auth sufficient pam_u2f.so cue"
+    insertbefore: "^@include common-auth"
+  with_items:
+    - "/etc/pam.d/sudo"
+    - "/etc/pam.d/sudo-i"
+    - "/etc/pam.d/polkit-1"
+
+- name: "Add U2F config file for Yubikey (interactive, type PIN or touch the Yubikey)"
+  command:
+    cmd: "pamu2fcfg > /home/{{ default_user }}/.config/Yubico/u2f_keys"
+    creates: "/home/{{ default_user }}/.config/Yubico/u2f_keys"

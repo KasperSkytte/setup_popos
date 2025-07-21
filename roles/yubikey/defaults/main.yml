@@ -1,0 +1,16 @@
+default_user: "{{ lookup('env', 'USER') }}"
+yubikey_apt_deps:
+  - pcscd
+  - libu2f-udev
+  - libfido2-1
+  - libfido2-dev
+  - libfido2-doc
+  - fido2-tools
+  - libpam-u2f
+  - pamu2fcfg
+# this will allow the yubikey to be used instead of a password for sudo and polkit-1 pop-ups
+# it will also disable password-less sudo if enabled
+# TODO: setup as second factor instead if disabled!
+yubikey_singlefactor: true
+yubikey_install_authenticator: true
+yubikey_authenticator_url: "https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz"

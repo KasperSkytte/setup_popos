@@ -1,3 +1,4 @@
+default_user: "{{ lookup('env', 'USER') }}"
 default_user_shell_zsh: true
 swap_file_size_mb: "{{ ansible_memtotal_mb }}"
 apt_pkgs:
@@ -6,14 +7,6 @@ apt_pkgs:
   - {name: tmux, state: present}
   - {name: jq, state: present}
   - {name: xclip, state: present}
-  - {name: pcscd, state: present} #for yubikey
-  - {name: libu2f-udev, state: present} #for yubikey
-  - {name: libfido2-1, state: present} #for yubikey
-  - {name: libfido2-dev, state: present} #for yubikey
-  - {name: libfido2-doc, state: present} #for yubikey
-  - {name: fido2-tools, state: present} #for yubikey
-  - {name: libpam-u2f, state: present} #for yubikey
-  - {name: pamu2fcfg, state: present} #for yubikey
   - {name: apt-transport-https, state: present}
   - {name: curl, state: present}
   - {name: python3-pip, state: present}
@@ -33,3 +26,7 @@ flatpak_pkgs:
   - {name: "com.axosoft.GitKraken", method: "system", state: "present", remote: "flathub"}
   - {name: "md.obsidian.Obsidian", method: "system", state: "present", remote: "flathub"}
 snap_pkgs: []
+# this will allow the yubikey to be used instead of a password for sudo and polkit-1 pop-ups
+# it will also disable password-less sudo if enabled
+yubikey_singlefactor: true
+yubikey_install_authenticator: true
