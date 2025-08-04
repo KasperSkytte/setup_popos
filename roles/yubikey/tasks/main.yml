@@ -6,6 +6,9 @@
     update_cache: true
 
 - name: "Install Yubico Authenticator"
+  when: yubikey_install_authenticator
+  become: true
+  become_user: "{{ default_user }}"
   block:
     - name: Ensure local lib directory exists
       file:
@@ -31,11 +34,8 @@
         executable: /bin/bash
         creates: "/home/{{ default_user }}/.local/share/applications/com.yubico.yubioath.desktop"
       when: desktop_integration_script.stdout != ""
-      become: true
-      become_user: "{{ default_user }}"
       environment:
         HOME: "/home/{{ default_user }}"
-  when: yubikey_install_authenticator
 
 - name: "Disable password-less sudo for all users"
   lineinfile:
@@ -52,6 +52,8 @@
     state: directory
     recurse: true
   when: yubikey_singlefactor
+  become: true
+  become_user: "{{ default_user }}"
 
 - name: "Set up yubikey for sudo and polkit-1 pop-ups"
   lineinfile:
@@ -64,7 +66,9 @@
     - "/etc/pam.d/sudo-i"
     - "/etc/pam.d/polkit-1"
 
-- name: "Add U2F config file for Yubikey (interactive, type PIN or touch the Yubikey)"
-  command:
+- name: "Add U2F config file for Yubikey (interactive, type PIN and touch the Yubikey)"
+  shell:
     cmd: "pamu2fcfg > /home/{{ default_user }}/.config/Yubico/u2f_keys"
     creates: "/home/{{ default_user }}/.config/Yubico/u2f_keys"
+  become: true
+  become_user: "{{ default_user }}"

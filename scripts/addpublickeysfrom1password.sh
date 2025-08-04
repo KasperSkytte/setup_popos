@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 DEST_DIR="${HOME}/.ssh/keys"
 mkdir -p "$DEST_DIR"
