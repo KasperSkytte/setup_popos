@@ -19,6 +19,7 @@ apt_pkgs:
   - {name: locate, state: present}
   - {name: ssh-askpass, state: present} #for ansible
   - {name: terminator, state: present}
+  - {name: pinta, state: present}
   - {deb: "https://tvd-packages.tradingview.com/ubuntu/stable/latest/jammy/tradingview_amd64.deb", state: present}
 flatpak_repos:
   - {name: "flathub", method: "system", state: "present", url: "https://flathub.org/repo/flathub.flatpakrepo"}
