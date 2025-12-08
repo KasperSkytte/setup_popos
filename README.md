@@ -15,3 +15,7 @@ Setup a clean machine as I'm used to it. No personal settings or secrets here.
  - Setup personal dotfiles
  - setup hostname
  - yubikey role uses become_user, ideal?
+ - SSH keys
+ - fix vscode repo:
+  echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
+

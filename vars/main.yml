@@ -1,3 +1,4 @@
+hostname: "slaptop"
 default_user: "{{ lookup('env', 'USER') }}"
 default_user_shell_zsh: true
 swap_file_size_mb: "{{ ansible_memtotal_mb }}"
