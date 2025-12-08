@@ -18,4 +18,4 @@ Setup a clean machine as I'm used to it. No personal settings or secrets here.
  - SSH keys
  - fix vscode repo:
   echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
-
+ - install gnome screenshot
