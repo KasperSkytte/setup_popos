@@ -5,7 +5,7 @@
   pre_tasks:
     - name: Set ansible_distribution to Ubuntu if running Pop!_OS
       set_fact: ansible_distribution="Ubuntu"
-      when: ansible_distribution == "Pop!_OS"
+      when: ansible_facts["distribution"] == "Pop!_OS"
     - name: Stop packagekitd temporarily
       service:
         name: packagekit

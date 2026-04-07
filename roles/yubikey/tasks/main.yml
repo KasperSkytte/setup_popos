@@ -64,7 +64,7 @@
   with_items:
     - "/etc/pam.d/sudo"
     - "/etc/pam.d/sudo-i"
-    - "/etc/pam.d/polkit-1"
+    - "{{ '/etc/pam.d/polkit-1' if ansible_facts['distribution'] == 'Pop!_OS' and ansible_facts['distribution_major_version']|int <= 22 else '/usr/lib/pam.d/polkit-1' }}"
 
 - name: "Add U2F config file for Yubikey (interactive, type PIN and touch the Yubikey)"
   shell:
