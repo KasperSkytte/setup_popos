@@ -20,6 +20,7 @@
   vars_files:
     - vars/main.yml
   roles:
+    # see https://support.yubico.com/s/article/Ubuntu-Linux-login-guide-U2F
     - role: yubikey
       tags: yubikey
     # - role: geerlingguy.swap
@@ -30,14 +31,14 @@
       tags: snaps
     - role: docker
       tags: docker
-    - role: vscode
-      tags: vscode
+    #- role: vscode
+    #  tags: vscode
+    - role: antigravity
+      tags: antigravity
     - role: 1password
       tags: 1password
     - role: brave-browser
       tags: brave-browser
-    - role: spotify-client
-      tags: spotify-client
     - role: tailscale
       tags: tailscale
     - role: teleport

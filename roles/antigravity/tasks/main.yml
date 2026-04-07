@@ -1,0 +1,17 @@
+- name: Add APT repository
+  include_role:
+    name: apt_repo
+  loop: 
+    - {
+        name: "antigravity",
+        signing_key_url: "https://us-central1-apt.pkg.dev/doc/repo-signing-key.gpg",
+        repo_source_string: "https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main"
+      }
+  loop_control:
+    loop_var: repo
+
+- name: Install antigravity
+  apt:
+    name: antigravity
+    state: present
+    autoremove: true
