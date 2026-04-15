@@ -16,6 +16,7 @@ apt_pkgs:
   - {name: sshfs, state: present}
   - {name: net-tools, state: present}
   - {name: nmap, state: present}
+  - {name: cmake, state: present}
   - {name: traceroute, state: present}
   - {name: locate, state: present}
   - {name: ssh-askpass, state: present} #for ansible
