@@ -55,6 +55,21 @@
   become: true
   become_user: "{{ default_user }}"
 
+- name: Check if /etc/pam.d/polkit-1 exists
+  stat:
+    path: /etc/pam.d/polkit-1
+  register: polkit_pam_file
+
+- name: Copy default polkit-1 PAM config if missing from /etc
+  copy:
+    src: /usr/lib/pam.d/polkit-1
+    dest: /etc/pam.d/polkit-1
+    remote_src: yes
+    mode: '0644'
+  when: 
+    - not polkit_pam_file.stat.exists
+    #- ansible_facts['distribution_major_version']|int > 22
+
 - name: "Set up yubikey for sudo and polkit-1 pop-ups"
   lineinfile:
     path: "{{ item }}"
@@ -64,7 +79,7 @@
   with_items:
     - "/etc/pam.d/sudo"
     - "/etc/pam.d/sudo-i"
-    - "{{ '/etc/pam.d/polkit-1' if ansible_facts['distribution'] == 'Pop!_OS' and ansible_facts['distribution_major_version']|int <= 22 else '/usr/lib/pam.d/polkit-1' }}"
+    - "/etc/pam.d/polkit-1"
 
 - name: "Add U2F config file for Yubikey (interactive, type PIN and touch the Yubikey)"
   shell:
