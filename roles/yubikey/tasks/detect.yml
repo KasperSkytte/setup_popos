@@ -1,0 +1,93 @@
+---
+# Work out what this host actually runs, instead of assuming a release.
+# Everything below is detected at runtime, so point releases that bump
+# polkit/sudo are handled without editing the role.
+
+- name: Check that the OS is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] in yubikey_supported_distros
+      - ansible_facts['distribution_major_version'] in yubikey_supported_major_versions
+    fail_msg: >-
+      {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}
+      is not in the supported list. Set yubikey_allow_unsupported_os=true to try anyway.
+    quiet: true
+  when: not (yubikey_allow_unsupported_os | bool)
+
+# ---- polkit -------------------------------------------------------------
+# 22.04: polkit 0.105 (policykit-1), PAM file shipped in /etc/pam.d
+# 24.04: polkit 124, PAM file shipped in /usr/lib/pam.d (vendor dir)
+# newer (127+): PAM runs in the sandboxed polkit-agent-helper@.service
+- name: Get polkit version
+  ansible.builtin.command: pkaction --version
+  register: yubikey_pkaction
+  changed_when: false
+  failed_when: false
+
+- name: Check for the sandboxed polkit agent helper unit
+  ansible.builtin.find:
+    paths:
+      - /usr/lib/systemd/system
+      - /lib/systemd/system
+    patterns: "polkit-agent-helper@.service"
+  register: yubikey_polkit_helper_unit
+
+# ---- sudo implementation (Ubuntu 25.10+ defaults to sudo-rs) ---------------
+- name: Get sudo implementation
+  ansible.builtin.command: sudo --version
+  register: yubikey_sudo_version
+  changed_when: false
+  failed_when: false
+
+# ---- display manager / desktop ---------------------------------------------
+- name: Resolve the display manager unit
+  ansible.builtin.command: readlink -f /etc/systemd/system/display-manager.service
+  register: yubikey_dm_link
+  changed_when: false
+  failed_when: false
+
+- name: List installed desktop sessions
+  ansible.builtin.find:
+    paths:
+      - /usr/share/wayland-sessions
+      - /usr/share/xsessions
+    patterns: "*.desktop"
+  register: yubikey_session_files
+
+- name: Set detected facts
+  ansible.builtin.set_fact:
+    yubikey_polkit_version: >-
+      {{ (yubikey_pkaction.stdout | default('') | split | last | default('unknown'))
+         if yubikey_pkaction.rc == 0 else 'not installed' }}
+    yubikey_polkit_sandboxed: "{{ yubikey_polkit_helper_unit.matched > 0 }}"
+    yubikey_sudo_impl: >-
+      {{ 'sudo-rs' if 'sudo-rs' in (yubikey_sudo_version.stdout | default('')) else 'sudo' }}
+    yubikey_display_manager: >-
+      {{ (yubikey_dm_link.stdout | default('') | basename | regex_replace('\.service$', ''))
+         if yubikey_dm_link.rc == 0 else 'none' }}
+    yubikey_desktops: >-
+      {{ yubikey_session_files.files | map(attribute='path') | map('basename')
+         | map('regex_replace', '\.desktop$', '') | map('lower')
+         | map('regex_replace', '^(pop|ubuntu|gnome).*$', 'gnome')
+         | map('regex_replace', '^(plasma|kde).*$', 'kde')
+         | map('regex_replace', '^cosmic.*$', 'cosmic')
+         | unique | sort | list }}
+
+# PAM services for the greeter (login) and lock screen, derived from what is
+# installed. Only used when yubikey_login is true.
+- name: Work out greeter / lock screen PAM services
+  ansible.builtin.set_fact:
+    yubikey_login_pam_services: >-
+      {{ ((yubikey_dm_pam_services[yubikey_display_manager] | default([]))
+         + (yubikey_desktops | map('extract', yubikey_lock_pam_services) | select('defined') | flatten))
+         | unique | list }}
+
+- name: Detected environment
+  ansible.builtin.debug:
+    msg:
+      - "OS:              {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+      - "polkit:          {{ yubikey_polkit_version }}{{ ' (sandboxed agent helper)' if yubikey_polkit_sandboxed else '' }}"
+      - "sudo:            {{ yubikey_sudo_impl }}"
+      - "display manager: {{ yubikey_display_manager }}"
+      - "desktops:        {{ yubikey_desktops | join(', ') | default('none', true) }}"
+      - "login/lock PAM:  {{ yubikey_login_pam_services | join(', ') if yubikey_login | bool else 'not managed (yubikey_login=false)' }}"

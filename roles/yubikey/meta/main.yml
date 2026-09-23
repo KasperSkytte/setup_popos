@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: yubikey
+  author: Kasper Skytte Andersen
+  description: YubiKey (pam_u2f) for sudo and polkit prompts, incl. 1Password system unlock, on Ubuntu / Pop!_OS COSMIC
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+dependencies: []

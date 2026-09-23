@@ -1,16 +1,94 @@
-default_user: "{{ lookup('env', 'USER') }}"
+---
+# Packages. pamu2fcfg is split into its own package on Ubuntu/Pop!_OS.
+# python3-pexpect is needed by ansible.builtin.expect for interactive enrollment.
 yubikey_apt_deps:
-  - pcscd
-  - libu2f-udev
-  - libfido2-1
-  - libfido2-dev
-  - libfido2-doc
-  - fido2-tools
   - libpam-u2f
   - pamu2fcfg
-# this will allow the yubikey to be used instead of a password for sudo and polkit-1 pop-ups
-# it will also disable password-less sudo if enabled
-# TODO: setup as second factor instead if disabled!
-yubikey_singlefactor: true
+  - yubikey-manager
+  - python3-pexpect
+
+# Yubico Authenticator desktop app, installed per user in ~/.local/lib
 yubikey_install_authenticator: true
 yubikey_authenticator_url: "https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz"
+
+# true  = a key tap alone authorizes sudo and polkit prompts (1Password, pkexec,
+#         GUI admin prompts). The password still works as a fallback.
+# false = the pam_u2f lines are removed again.
+yubikey_singlefactor: true
+
+# Ensure the sudo group needs authentication (removes a NOPASSWD rule for %sudo).
+yubikey_enforce_sudo_auth: true
+
+# Central key-mapping file. It lives outside $HOME so that sandboxed PAM callers
+# (newer polkit runs its agent helper with ProtectHome=yes) can still read it.
+yubikey_authfile: /etc/Yubico/u2f_keys
+
+# Fixed origin/appid, so the credentials survive a hostname change.
+# If you change these, you have to enroll the keys again.
+yubikey_origin: "pam://yubikey"
+yubikey_appid: "{{ yubikey_origin }}"
+
+# Print "Please touch the device." in terminal prompts.
+yubikey_cue: true
+
+# Extra pam_u2f options, e.g. ["debug", "debug_file=syslog"] or ["pinverification=1"].
+yubikey_pam_extra_args: []
+
+# PAM services that get the pam_u2f line. Services without a file are skipped.
+yubikey_pam_services:
+  - sudo
+  - sudo-i
+  - polkit-1
+
+# --- OS / desktop awareness ------------------------------------------------
+yubikey_supported_distros:
+  - Ubuntu
+  - Pop!_OS
+yubikey_supported_major_versions: ["22", "24", "26"]
+yubikey_allow_unsupported_os: false
+
+# Also accept a key tap at the login greeter and lock screen.
+# Off by default: a key-only login gives PAM no password, so the login keyring
+# (gnome-keyring) is not unlocked automatically. The password keeps working.
+yubikey_login: false
+
+# Display manager (from display-manager.service) -> PAM service for login.
+yubikey_dm_pam_services:
+  gdm3: [gdm-password]
+  gdm: [gdm-password]
+  cosmic-greeter: [cosmic-greeter]
+  sddm: [sddm]
+  lightdm: [lightdm]
+
+# Installed desktop -> PAM service used by its lock screen.
+yubikey_lock_pam_services:
+  gnome: [gdm-password]      # GNOME / Pop 22.04 / Ubuntu lock screen
+  cosmic: [cosmic-greeter]   # COSMIC lock screen
+  kde: [kde]                 # Plasma lock screen
+
+# --- Enrollment ------------------------------------------------------------
+# Option A (recommended): declare the mappings, so a reinstall needs no key taps.
+# Generate once per key (touch the key when it blinks):
+#   pamu2fcfg -n -o pam://yubikey -i pam://yubikey
+# and paste the output without the leading ':'. Example:
+# yubikey_u2f_mappings:
+#   kapper:
+#     - "<KeyHandle>,<PublicKey>,es256,+presence"   # primary key
+#     - "<KeyHandle>,<PublicKey>,es256,+presence"   # backup key
+# When this is non-empty, the role owns the whole authfile.
+yubikey_u2f_mappings: {}
+
+# Option B: if no mappings are declared and default_user has no line in the
+# authfile yet, run pamu2fcfg during the play. You are asked for the key's
+# FIDO2 PIN (leave empty if the key has none) and then touch the key.
+yubikey_enroll_interactive: true
+yubikey_enroll_timeout: 60
+
+# Assembled PAM line. Normally no need to override.
+yubikey_pam_line: >-
+  {{ (['auth', 'sufficient', 'pam_u2f.so',
+       'authfile=' ~ yubikey_authfile,
+       'origin=' ~ yubikey_origin,
+       'appid=' ~ yubikey_appid]
+      + (['cue'] if yubikey_cue else [])
+      + yubikey_pam_extra_args) | join(' ') }}

@@ -1,91 +1,242 @@
 ---
-- name: "Install required packages for yubikey"
-  apt:
+- name: Detect OS, polkit, sudo and desktop
+  ansible.builtin.import_tasks: detect.yml
+
+- name: Install required packages for YubiKey
+  ansible.builtin.apt:
     name: "{{ yubikey_apt_deps }}"
     state: present
     update_cache: true
+    cache_valid_time: 3600
 
-- name: "Install Yubico Authenticator"
-  when: yubikey_install_authenticator
+# --------------------------------------------------------------------------
+# Yubico Authenticator (per-user desktop app)
+# --------------------------------------------------------------------------
+- name: Install Yubico Authenticator
+  when: yubikey_install_authenticator | bool
   become: true
   become_user: "{{ default_user }}"
   block:
-    - name: Ensure local lib directory exists
-      file:
+    - name: Ensure ~/.local/lib exists
+      ansible.builtin.file:
         path: "/home/{{ default_user }}/.local/lib"
         state: directory
-        mode: '0775'
+        mode: "0775"
 
-    - name: Download and extract latest Yubico authenticator tarball into ~/.local/lib
-      unarchive:
+    - name: Download and extract latest Yubico Authenticator into ~/.local/lib
+      ansible.builtin.unarchive:
         src: "{{ yubikey_authenticator_url }}"
         dest: "/home/{{ default_user }}/.local/lib/"
-        remote_src: yes
+        remote_src: true
 
-    - name: Find desktop_integration.sh script (subfolder in the tarball is versioned and will change)
-      shell: |
-        find "/home/{{ default_user }}/.local/lib" -type f -path "*/yubico-authenticator*/desktop_integration.sh" -exec realpath {} \; -quit
+    - name: Find desktop_integration.sh (the tarball subfolder is versioned)
+      ansible.builtin.shell: >-
+        find "/home/{{ default_user }}/.local/lib" -type f
+        -path "*/yubico-authenticator*/desktop_integration.sh"
+        -exec realpath {} \; -quit
       register: desktop_integration_script
       changed_when: false
 
-    - name: "Run desktop integration script as user {{ default_user }}"
-      shell: "{{ desktop_integration_script.stdout }} -i"
+    - name: Run desktop integration script
+      ansible.builtin.shell: "{{ desktop_integration_script.stdout }} -i"
       args:
         executable: /bin/bash
         creates: "/home/{{ default_user }}/.local/share/applications/com.yubico.yubioath.desktop"
-      when: desktop_integration_script.stdout != ""
       environment:
         HOME: "/home/{{ default_user }}"
+      when: desktop_integration_script.stdout | length > 0
 
-- name: "Disable password-less sudo for all users"
-  lineinfile:
+# --------------------------------------------------------------------------
+# sudoers
+# --------------------------------------------------------------------------
+- name: Require authentication for the sudo group (no NOPASSWD)
+  ansible.builtin.lineinfile:
     path: /etc/sudoers
-    state: present
-    regexp: '^%sudo'
-    line: '%sudo ALL=(ALL) ALL'
-    validate: '/usr/sbin/visudo -cf %s'
-  when: yubikey_singlefactor
+    regexp: '^%sudo\s'
+    line: "%sudo\tALL=(ALL:ALL) ALL"
+    validate: visudo -cf %s  # works for both sudo and sudo-rs
+  when: yubikey_enforce_sudo_auth | bool
 
-- name: "Create ~/.config/Yubico directory"
-  file:
-    path: "/home/{{ default_user }}/.config/Yubico"
-    state: directory
-    recurse: true
-  when: yubikey_singlefactor
-  become: true
-  become_user: "{{ default_user }}"
+# --------------------------------------------------------------------------
+# Key enrollment -> central authfile
+# --------------------------------------------------------------------------
+- name: Enroll keys
+  when: yubikey_singlefactor | bool
+  block:
+    - name: Create /etc/Yubico
+      ansible.builtin.file:
+        path: "{{ yubikey_authfile | dirname }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
 
-- name: Check if /etc/pam.d/polkit-1 exists
-  stat:
+    - name: Write declared U2F mappings
+      ansible.builtin.template:
+        src: u2f_keys.j2
+        dest: "{{ yubikey_authfile }}"
+        owner: root
+        group: root
+        mode: "0644"
+      when: yubikey_u2f_mappings | length > 0
+
+    - name: Interactive enrollment
+      when:
+        - yubikey_u2f_mappings | length == 0
+        - yubikey_enroll_interactive | bool
+      block:
+        - name: Check whether the user is already enrolled
+          ansible.builtin.command: grep -q "^{{ default_user }}:" "{{ yubikey_authfile }}"
+          register: yubikey_enrolled
+          changed_when: false
+          failed_when: false  # rc 1 = not enrolled, rc 2 = file missing
+
+        - name: Enroll a key with pamu2fcfg
+          when: yubikey_enrolled.rc != 0
+          block:
+            - name: Ask for the FIDO2 PIN
+              ansible.builtin.pause:
+                prompt: >-
+                  Enrolling a YubiKey for {{ default_user }} on {{ inventory_hostname }}.
+                  Plug in the key and enter its FIDO2 PIN (leave empty if it has none).
+                  Touch the key when it blinks after you press Enter
+                echo: false
+              register: yubikey_pin_prompt
+
+            - name: Run pamu2fcfg (touch the key when it blinks)
+              ansible.builtin.expect:
+                command: >-
+                  pamu2fcfg -u {{ default_user }}
+                  -o {{ yubikey_origin }} -i {{ yubikey_appid }}
+                responses:
+                  '(?i)pin.*:': "{{ yubikey_pin_prompt.user_input | default('') }}"
+                timeout: "{{ yubikey_enroll_timeout }}"
+              become: true
+              become_user: "{{ default_user }}"
+              register: yubikey_pamu2fcfg
+              changed_when: false
+              no_log: true
+
+            - name: Extract the mapping line
+              ansible.builtin.set_fact:
+                yubikey_new_mapping: >-
+                  {{ yubikey_pamu2fcfg.stdout
+                     | regex_search('(?m)^' ~ default_user ~ ':\S+') }}
+
+            - name: Fail if pamu2fcfg returned no mapping
+              ansible.builtin.assert:
+                that: yubikey_new_mapping | length > 0
+                fail_msg: >-
+                  pamu2fcfg returned no credential (wrong PIN, no touch within
+                  {{ yubikey_enroll_timeout }}s, or no key plugged in). Re-run the play.
+
+            - name: Store the mapping in the authfile
+              ansible.builtin.lineinfile:
+                path: "{{ yubikey_authfile }}"
+                regexp: "^{{ default_user }}:"
+                line: "{{ yubikey_new_mapping }}"
+                create: true
+                owner: root
+                group: root
+                mode: "0644"
+
+# --------------------------------------------------------------------------
+# PAM: sudo, sudo-i, polkit-1
+# --------------------------------------------------------------------------
+- name: Check for an /etc copy of the polkit-1 PAM file
+  ansible.builtin.stat:
     path: /etc/pam.d/polkit-1
-  register: polkit_pam_file
+  register: yubikey_polkit_pam_etc
 
-- name: Copy default polkit-1 PAM config if missing from /etc
-  copy:
+- name: Check for the vendor polkit-1 PAM file
+  ansible.builtin.stat:
+    path: /usr/lib/pam.d/polkit-1
+  register: yubikey_polkit_pam_vendor
+
+- name: Copy vendor polkit-1 PAM config to /etc (polkit reads /etc first)
+  ansible.builtin.copy:
     src: /usr/lib/pam.d/polkit-1
     dest: /etc/pam.d/polkit-1
-    remote_src: yes
-    mode: '0644'
-  when: 
-    - not polkit_pam_file.stat.exists
-    #- ansible_facts['distribution_major_version']|int > 22
+    remote_src: true
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - not yubikey_polkit_pam_etc.stat.exists
+    - yubikey_polkit_pam_vendor.stat.exists
 
-- name: "Set up yubikey for sudo and polkit-1 pop-ups"
-  lineinfile:
-    path: "{{ item }}"
-    state: present
-    line: "auth sufficient pam_u2f.so cue"
-    insertbefore: "^@include common-auth"
-  with_items:
-    - "/etc/pam.d/sudo"
-    - "/etc/pam.d/sudo-i"
-    - "/etc/pam.d/polkit-1"
+- name: Find the PAM service files to manage
+  ansible.builtin.stat:
+    path: "/etc/pam.d/{{ item }}"
+  loop: "{{ (yubikey_pam_services + yubikey_login_pam_services) | unique }}"
+  register: yubikey_pam_files
 
-- name: "Add U2F config file for Yubikey (interactive, type PIN and touch the Yubikey)"
-  shell:
-    cmd: "pamu2fcfg > /home/{{ default_user }}/.config/Yubico/u2f_keys"
-    creates: "/home/{{ default_user }}/.config/Yubico/u2f_keys"
-  become: true
-  become_user: "{{ default_user }}"
+- name: Split PAM files into enabled and disabled sets
+  ansible.builtin.set_fact:
+    yubikey_pam_enable: >-
+      {{ yubikey_pam_files.results | selectattr('stat.exists')
+         | selectattr('item', 'in', yubikey_pam_wanted) | list }}
+    yubikey_pam_disable: >-
+      {{ yubikey_pam_files.results | selectattr('stat.exists')
+         | rejectattr('item', 'in', yubikey_pam_wanted) | list }}
+  vars:
+    yubikey_pam_wanted: >-
+      {{ [] if not (yubikey_singlefactor | bool)
+         else yubikey_pam_services
+              + (yubikey_login_pam_services if yubikey_login | bool else []) }}
 
-#- name: "adjust permissions"
+- name: Add or update the pam_u2f line (before the first auth rule)
+  ansible.builtin.lineinfile:
+    path: "{{ item.stat.path }}"
+    regexp: '^\s*auth\s+\S+\s+pam_u2f\.so'
+    line: "{{ yubikey_pam_line }}"
+    insertbefore: '^\s*(@include\s+common-auth|auth\s)'
+    firstmatch: true
+  loop: "{{ yubikey_pam_enable }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Remove the pam_u2f line where it is not wanted
+  ansible.builtin.lineinfile:
+    path: "{{ item.stat.path }}"
+    regexp: '^\s*auth\s+\S+\s+pam_u2f\.so'
+    state: absent
+  loop: "{{ yubikey_pam_disable }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+# --------------------------------------------------------------------------
+# polkit >= 127: the PAM conversation runs in a sandboxed systemd unit that
+# hides /dev/hidraw*. Only applied when detect.yml found that unit
+# (not on 22.04 / 24.04).
+# --------------------------------------------------------------------------
+- name: Let the polkit agent helper see FIDO devices
+  when:
+    - yubikey_singlefactor | bool
+    - yubikey_polkit_sandboxed | bool
+  block:
+    - name: Create drop-in directory
+      ansible.builtin.file:
+        path: /etc/systemd/system/polkit-agent-helper@.service.d
+        state: directory
+        mode: "0755"
+
+    - name: Install hidraw drop-in
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/polkit-agent-helper@.service.d/50-fido2.conf
+        mode: "0644"
+        content: |
+          # Managed by Ansible (yubikey role)
+          [Service]
+          PrivateDevices=no
+          DevicePolicy=closed
+          DeviceAllow=char-hidraw rw
+          ProtectHome=read-only
+      notify: Reload systemd
+
+- name: Remove hidraw drop-in when not needed
+  ansible.builtin.file:
+    path: /etc/systemd/system/polkit-agent-helper@.service.d
+    state: absent
+  when: not (yubikey_singlefactor | bool) or not (yubikey_polkit_sandboxed | bool)
+  notify: Reload systemd

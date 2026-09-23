@@ -8,6 +8,12 @@ apt_pkgs:
   - {name: tmux, state: present}
   - {name: jq, state: present}
   - {name: xclip, state: present}
+  - {name: pcscd, state: present} #for yubikey
+  # - {name: libu2f-udev, state: present} #for yubikey
+  # - {name: libfido2-1, state: present} #for yubikey
+  # - {name: libfido2-dev, state: present} #for yubikey
+  # - {name: libfido2-doc, state: present} #for yubikey
+  # - {name: fido2-tools, state: present} #for yubikey
   - {name: apt-transport-https, state: present}
   - {name: curl, state: present}
   - {name: python3-pip, state: present}

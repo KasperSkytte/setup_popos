@@ -1,0 +1,3 @@
+{% for user, keys in yubikey_u2f_mappings | dictsort %}
+{{ user }}:{{ ([keys] if keys is string else keys) | join(':') }}
+{% endfor %}
